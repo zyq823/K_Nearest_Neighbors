@@ -3,11 +3,7 @@ import matplotlib.pyplot as plt
 import math
 
 class DataPoint(object): # DataPoint class helps to group data and methods
-
     def __init__(self, feats):
-        """
-        Return a DataPoint object whose attributes are given as "feats"
-        """
         self.sLen = feats['sepal_length']
         self.sWid = feats['sepal_width']
         self.pLen = feats['pedal_length']
@@ -15,24 +11,9 @@ class DataPoint(object): # DataPoint class helps to group data and methods
         self.label = feats['class']
 
     def feature_vector(self):
-        """
-        Return feature vector as a numpy array
-        """
         return np.array([self.sLen, self.sWid, self.pLen, self.pWid])
 
-    def feature_vector_with_bias(self):
-        """
-        Return features with 1 appended at the end
-        We 'absorb' bias (b) into the feature vector w by adding one additional constant dimension
-        y = wx + b becomes y = w'x' where x' = [x; 1] and w' = [w; b] 
-        """
-        return np.array([self.sLen, self.sWid, self.pLen, self.pWid, 1.])
-
     def __str__(self):
-        """
-        print(object) uses this method
-        (format: Sepal Length: 5.4, Sepal Width: 3.7, Pedal Length: 1.5, Pedal Width: 0.2, Class: Iris-setosa)
-        """
         return "Sepal Length: {}, Sepal Width: {}, Pedal Length: {}, Pedal Width: {}, Class: {}".format(self.sLen, self.sWid, self.pLen, self.pWid, self.label)
 
 def parse_dataset(filename):
@@ -197,13 +178,23 @@ def acc_metric(train_set, the_set, k_values):
             if k_nearest_neighbors(train_set, dp, k) == correct:
                 count +=1
         accuracy.append(count / set_size)
-    plot_acc(accuracy, k_values)
+    if len(k_values) == 1:
+        return accuracy[0]
+    else:
+        # plot_acc(accuracy, k_values)
+        return k_values[accuracy.index(max(accuracy))]
 
 def plot_acc(acc, k_values):
-    print(acc)
     plt.figure(figsize = (10, 10))
     plt.plot(k_values, acc)
-    plt.title('Acc Metric')
+    plt.title('Acc Metric on Dev Set')
+    plt.xlabel('k-value')
+    plt.ylabel('classification accuracy')
     plt.show()
+    
 
-acc_metric(train_set, dev_set, k_values)
+best_k = acc_metric(train_set, dev_set, k_values)
+test_set = parse_dataset('iris_test.csv')
+best_k_value = [best_k]
+acc_test = acc_metric(train_set, test_set, best_k_value)
+print(acc_test)
