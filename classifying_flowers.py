@@ -197,4 +197,3 @@ best_k = acc_metric(train_set, dev_set, k_values)
 test_set = parse_dataset('iris_test.csv')
 best_k_value = [best_k]
 acc_test = acc_metric(train_set, test_set, best_k_value)
-print(acc_test)
